@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 
 @Entity
 public class Reservation {
@@ -22,78 +24,63 @@ public class Reservation {
     private BigDecimal penalty;
     private String status;
 
-    public Reservation() {
+    public Reservation(String hotelId, String roomNumber, String guestEmail, LocalDate startDate, LocalDate endDate, BigDecimal penalty) {
+        this.hotelId = hotelId;
+        this.roomNumber = roomNumber;
+        this.guestEmail = guestEmail;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        long nights = ChronoUnit.DAYS.between(startDate, endDate);
+        this.price = (BigDecimal.valueOf(50000).multiply(BigDecimal.valueOf(nights)));
+        this.penalty = penalty;
+        this.status = "PENDING";
+    }
+
+    public void cancelReservation() {
+        long daysUntilStart = ChronoUnit.DAYS.between(LocalDate.now(), this.startDate);
+        this.penalty = daysUntilStart < 2
+                ? this.price.multiply(BigDecimal.valueOf(30)).divide(BigDecimal.valueOf(100))
+                : BigDecimal.ZERO;
+        this.status = "CANCELLED";
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getHotelId() {
         return hotelId;
-    }
-
-    public void setHotelId(String hotelId) {
-        this.hotelId = hotelId;
     }
 
     public String getRoomNumber() {
         return roomNumber;
     }
 
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-
     public String getGuestEmail() {
         return guestEmail;
     }
 
-    public void setGuestEmail(String guestEmail) {
-        this.guestEmail = guestEmail;
-    }
 
     public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
 
     public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
 
     public BigDecimal getPenalty() {
         return penalty;
     }
 
-    public void setPenalty(BigDecimal penalty) {
-        this.penalty = penalty;
-    }
-
     public String getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

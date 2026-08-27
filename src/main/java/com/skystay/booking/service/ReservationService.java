@@ -6,6 +6,8 @@ import com.skystay.booking.web.BookingRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,27 +29,27 @@ public class ReservationService {
             throw new IllegalStateException("Cette chambre est déjà réservée sur cette période.");
         }
         long nights = ChronoUnit.DAYS.between(request.startDate(), request.endDate());
-        Reservation reservation = new Reservation();
-        reservation.setHotelId(request.hotelId());
-        reservation.setRoomNumber(request.roomNumber());
-        reservation.setGuestEmail(request.guestEmail());
-        reservation.setStartDate(request.startDate());
-        reservation.setEndDate(request.endDate());
-        reservation.setPrice(PRICE_PER_NIGHT.multiply(BigDecimal.valueOf(nights)));
-        reservation.setPenalty(BigDecimal.ZERO);
-        reservation.setStatus("PENDING");
+        Reservation reservation = new Reservation(request.hotelId(),
+                request.roomNumber(),
+                request.guestEmail(),
+                request.startDate(),
+                request.endDate(),
+                BigDecimal.ZERO);
         return repository.save(reservation);
     }
 
     public Reservation cancel(Long reservationId) {
         Reservation reservation = repository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Réservation introuvable."));
-        long daysUntilStart = ChronoUnit.DAYS.between(LocalDate.now(), reservation.getStartDate());
-        BigDecimal penalty = daysUntilStart < 2
-                ? reservation.getPrice().multiply(PENALTY_RATE).divide(BigDecimal.valueOf(100))
-                : BigDecimal.ZERO;
-        reservation.setPenalty(penalty);
-        reservation.setStatus("CANCELLED");
+        reservation.cancelReservation();
         return repository.save(reservation);
+    }
+
+    public void cancelAll() {
+        List<Reservation> reservations = repository.findAll();
+        for (Reservation reservation : reservations) {
+            reservation.cancelReservation();
+        }
+        repository.saveAll(reservations);
     }
 }
