@@ -1,0 +1,14 @@
+### Réserver une chambre
+POST http://localhost:8080/api/reservations
+Content-Type: application/json
+
+{
+  "hotelId": "IBIS-DAKAR",
+  "roomNumber": "999",
+  "guestEmail": "test@skystay.test",
+  "startDate": "2026-12-01",
+  "endDate": "2026-12-03"
+}
+
+### Consulter une réservation
+GET http://localhost:8080/api/reservations/1
