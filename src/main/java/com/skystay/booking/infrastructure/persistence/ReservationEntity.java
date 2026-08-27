@@ -1,4 +1,4 @@
-package com.skystay.booking.persistence;
+package com.skystay.booking.infrastructure.persistence;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-public class Reservation {
+public class ReservationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class Reservation {
     private BigDecimal penalty;
     private String status;
 
-    public Reservation() {
+    public ReservationEntity() {
     }
 
     public Long getId() {

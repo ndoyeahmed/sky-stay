@@ -32,6 +32,14 @@ public class Reservation {
         return new Reservation(null, hotelId, room, guest, stay, price);
     }
 
+    public static Reservation reconstruct(ReservationId id, String hotelId, RoomNumber room, GuestEmail guest,
+                                           DateRange stay, Money price, Money penalty, ReservationStatus status) {
+        Reservation reservation = new Reservation(id, hotelId, room, guest, stay, price);
+        reservation.penalty = penalty;
+        reservation.status = status;
+        return reservation;
+    }
+
     public void confirm() {
         if (status != ReservationStatus.PENDING) {
             throw new IllegalStateException("Seule une réservation en attente peut être confirmée.");

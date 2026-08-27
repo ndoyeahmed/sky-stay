@@ -1,4 +1,4 @@
-package com.skystay.booking.persistence;
+package com.skystay.booking.infrastructure.persistence;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,12 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface SpringDataReservationRepository extends JpaRepository<ReservationEntity, Long> {
 
-    List<Reservation> findByHotelId(String hotelId);
+    List<ReservationEntity> findByHotelId(String hotelId);
 
     @Query("""
-            SELECT COUNT(r) > 0 FROM Reservation r
+            SELECT COUNT(r) > 0 FROM ReservationEntity r
             WHERE r.hotelId = :hotelId AND r.roomNumber = :roomNumber
             AND r.startDate < :endDate AND r.endDate > :startDate
             """)
