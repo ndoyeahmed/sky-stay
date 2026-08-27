@@ -13,8 +13,8 @@ Content-Type: application/json
 ### Consulter une réservation
 GET http://localhost:8080/api/reservations/1
 
-### Fermer un hôtel (batch, contourne la règle des 48h)
+### Fermer un hôtel (batch, applique désormais la règle des 48h via l'agrégat)
 POST http://localhost:8080/api/admin/hotels/IBIS-DAKAR/close
 
 ### Vérification à coller dans la console H2 :
-# SELECT status, COUNT(*), SUM(penalty) FROM reservation GROUP BY status;
+# SELECT status, COUNT(*), SUM(penalty) FROM reservation_entity GROUP BY status;
