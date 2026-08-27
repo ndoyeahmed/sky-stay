@@ -5,6 +5,7 @@ import com.skystay.booking.persistence.ReservationRepository;
 import com.skystay.booking.service.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,11 @@ public class ReservationController {
         return repository.findById(id)
                 .map(reservation -> ResponseEntity.ok(toView(reservation)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ReservationView> cancel(@PathVariable Long id) {
+        return ResponseEntity.ok(toView(service.cancel(id)));
     }
 
     private ReservationView toView(Reservation r) {

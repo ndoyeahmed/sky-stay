@@ -4,6 +4,7 @@ import com.skystay.booking.persistence.Reservation;
 import com.skystay.booking.persistence.ReservationRepository;
 import com.skystay.booking.web.BookingRequest;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class ReservationService {
 
     private static final BigDecimal PRICE_PER_NIGHT = BigDecimal.valueOf(50000);
+    private static final BigDecimal PENALTY_RATE = BigDecimal.valueOf(30);
 
     private final ReservationRepository repository;
 
@@ -34,6 +36,18 @@ public class ReservationService {
         reservation.setPrice(PRICE_PER_NIGHT.multiply(BigDecimal.valueOf(nights)));
         reservation.setPenalty(BigDecimal.ZERO);
         reservation.setStatus("PENDING");
+        return repository.save(reservation);
+    }
+
+    public Reservation cancel(Long reservationId) {
+        Reservation reservation = repository.findById(reservationId)
+                .orElseThrow(() -> new IllegalArgumentException("Réservation introuvable."));
+        long daysUntilStart = ChronoUnit.DAYS.between(LocalDate.now(), reservation.getStartDate());
+        BigDecimal penalty = daysUntilStart < 2
+                ? reservation.getPrice().multiply(PENALTY_RATE).divide(BigDecimal.valueOf(100))
+                : BigDecimal.ZERO;
+        reservation.setPenalty(penalty);
+        reservation.setStatus("CANCELLED");
         return repository.save(reservation);
     }
 }
